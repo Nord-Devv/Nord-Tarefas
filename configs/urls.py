@@ -21,7 +21,7 @@ from funcionarios.api import api_funcionario
 from tarefas.api import api_tarefa
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("funcionario/", api_funcionario.urls),
     path("tarefa/", api_tarefa.urls),
 ]

@@ -12,9 +12,7 @@ api_tarefa = NinjaAPI(urls_namespace="tarefa")
 
 class TarefaAPI:
     @staticmethod
-    @api_tarefa.get(
-        "/tarefa/listar_tarefas", response=list[TarefaSchema]
-    )  # adicionar permission para login dos gestores
+    @api_tarefa.get("/tarefa/listar_tarefas", response=list[TarefaSchema])
     def listar_tarefas(request):
         tarefas = Tarefa.objects.all()
 

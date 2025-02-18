@@ -1,17 +1,14 @@
-from ninja import NinjaAPI
-from django.http import JsonResponse
+from datetime import datetime, timedelta
+
+import jwt
+import pytz
 from django.contrib.auth import logout
 from django.contrib.auth.hashers import check_password
-from datetime import datetime, timedelta
-from ninja.errors import HttpError
-from .schemas import LoginFuncionarioSchema
-import jwt
-
-from datetime import datetime, timedelta
-import pytz
-import jwt
 from django.http import JsonResponse
-from django.contrib.auth.hashers import check_password
+from ninja import NinjaAPI
+from ninja.errors import HttpError
+
+from .schemas import LoginFuncionarioSchema
 
 SECRET_KEY = "your_secret_key"
 
@@ -24,15 +21,21 @@ class FuncionarioAPI:
     def login_funcionario(request, data: LoginFuncionarioSchema):
         try:
             # Get the user's timezone from the request (e.g., in headers or body)
-            user_timezone = request.headers.get("Timezone", "UTC")  # Default to UTC if not provided
+            user_timezone = request.headers.get(
+                "Timezone", "UTC"
+            )  # Default to UTC if not provided
 
             # Fetch the funcionario
-            funcionario = funcionario.objects.filter(email_funcionario=data.email_funcionario).first()
+            funcionario = funcionario.objects.filter(
+                email_funcionario=data.email_funcionario
+            ).first()
 
             if not funcionario:
                 return JsonResponse({"error": "Usuário não encontrado"}, status=400)
 
-            if not check_password(data.senha_funcionario, funcionario.senha_funcionario):
+            if not check_password(
+                data.senha_funcionario, funcionario.senha_funcionario
+            ):
                 return JsonResponse({"error": "Senha incorreta"}, status=400)
 
             # Get the current time in UTC
@@ -48,7 +51,10 @@ class FuncionarioAPI:
             # Encode the token with the expiration time in UTC (JWT expects UTC)
             expiration_time_utc = expiration_time.astimezone(pytz.utc)
             token = jwt.encode(
-                {"email_funcionario": funcionario.email_funcionario, "exp": expiration_time_utc},
+                {
+                    "email_funcionario": funcionario.email_funcionario,
+                    "exp": expiration_time_utc,
+                },
                 SECRET_KEY,
                 algorithm="HS256",
             )

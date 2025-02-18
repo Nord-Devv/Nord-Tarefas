@@ -14,10 +14,8 @@ class Tarefa(models.Model):
         Funcionario, on_delete=models.CASCADE, blank=True, null=True, default=None
     )
     descricao_tarefa = models.TextField(blank=True)
-    prazo_inicial_tarefa = models.DateTimeField(
-        auto_now_add=True, blank=True, null=True
-    )
-    prazo_final_tarefa = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    prazo_inicial_tarefa = models.DateTimeField(blank=True, null=True)
+    prazo_final_tarefa = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.nome_tarefa
