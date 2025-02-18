@@ -17,6 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from funcionarios.api import api_funcionario
+from tarefas.api import api_tarefa
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("funcionario/", api_funcionario.urls),
+    path("tarefa/", api_tarefa.urls),
 ]
