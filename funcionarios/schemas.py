@@ -2,5 +2,5 @@ from ninja import schema
 
 
 class LoginFuncionarioSchema(schema.Schema):
-    email_usuario: str
-    senha_usuario: str
+    email_funcionario: str
+    senha_funcionario: str

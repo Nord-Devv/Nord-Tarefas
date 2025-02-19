@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.hashers import make_password
 from django.utils.html import format_html
 
 from .models import Funcionario
@@ -29,3 +30,13 @@ class FuncionarioAdmin(admin.ModelAdmin):
         return "No Image"
 
     display_foto_funcionario.short_description = "Foto"  # Column header in the admin
+
+    def save_model(self, request, obj, form, change):
+        """Encrypt the password before saving the user."""
+        if obj.pk:  # If updating an existing user
+            original = Funcionario.objects.get(pk=obj.pk)
+            if original.senha_funcionario != obj.senha_funcionario:
+                obj.senha_funcionario = make_password(obj.senha_funcionario)
+        else:  # If creating a new user
+            obj.senha_funcionario = make_password(obj.senha_funcionario)
+        super().save_model(request, obj, form, change)
