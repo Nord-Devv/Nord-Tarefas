@@ -30,7 +30,7 @@ SECRET_KEY = "django-insecure-st-sjkr9c7q3a(7(2ex^23s^aa8(cpu+d2e7+xbgsdnr6a(hb3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # TODO: DESABILITAR
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["nord-tarefas.onrender.com"]
 
 
 # Application definition
@@ -183,7 +183,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:4200",
     "http://127.0.0.1:4200",
-    "nord-tarefas.onrender.com",
 ]
 
 CORS_ALLOW_METHODS = [
