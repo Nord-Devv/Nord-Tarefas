@@ -1,11 +1,11 @@
+from datetime import datetime
+
 from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
+from django.utils.timezone import make_aware
 from ninja import NinjaAPI
 
 from funcionarios.models import Funcionario
-from django.utils.timezone import make_aware
-from datetime import datetime
-
 
 from .models import Tarefa
 from .schemas import TarefaSchema
@@ -15,7 +15,9 @@ api_tarefa = NinjaAPI(urls_namespace="tarefa")
 
 class TarefaAPI:
     @staticmethod
-    @api_tarefa.post("/tarefa/adicionar_tarefas", response={200: TarefaSchema, 400: dict})
+    @api_tarefa.post(
+        "/tarefa/adicionar_tarefas", response={200: TarefaSchema, 400: dict}
+    )
     def adicionar_tarefa(request, tarefa: TarefaSchema):
         try:
             print("Received tarefa data:", tarefa.model_dump())  # Log the incoming data
@@ -36,10 +38,14 @@ class TarefaAPI:
 
             prazo_inicial_tarefa = (
                 make_aware(datetime.fromisoformat(tarefa_data["prazo_inicial_tarefa"]))
-                if tarefa_data.get("prazo_inicial_tarefa") else None)
+                if tarefa_data.get("prazo_inicial_tarefa")
+                else None
+            )
             prazo_final_tarefa = (
                 make_aware(datetime.fromisoformat(tarefa_data["prazo_final_tarefa"]))
-                if tarefa_data.get("prazo_final_tarefa") else None)
+                if tarefa_data.get("prazo_final_tarefa")
+                else None
+            )
 
             # Create the task
             instancia_tarefa = Tarefa.objects.create(
@@ -59,7 +65,9 @@ class TarefaAPI:
             return 400, {"error": str(e)}
 
     @staticmethod
-    @api_tarefa.post("/tarefa/adicionar_tarefas", response={200: TarefaSchema, 400: dict})
+    @api_tarefa.post(
+        "/tarefa/adicionar_tarefas", response={200: TarefaSchema, 400: dict}
+    )
     def adicionar_tarefa(request, tarefa: TarefaSchema):
         try:
             print("Received tarefa data:", tarefa.model_dump())  # Log the incoming data
@@ -135,9 +143,13 @@ class TarefaAPI:
                 )
                 tarefa.atribuicao_tarefa = funcionario
             if dados_tarefa.prazo_inicial_tarefa is not None:
-                tarefa.prazo_inicial_tarefa = make_aware(datetime.fromisoformat(dados_tarefa.prazo_inicial_tarefa))
+                tarefa.prazo_inicial_tarefa = make_aware(
+                    datetime.fromisoformat(dados_tarefa.prazo_inicial_tarefa)
+                )
             if dados_tarefa.prazo_final_tarefa is not None:
-                tarefa.prazo_final_tarefa = make_aware(datetime.fromisoformat(dados_tarefa.prazo_final_tarefa))
+                tarefa.prazo_final_tarefa = make_aware(
+                    datetime.fromisoformat(dados_tarefa.prazo_final_tarefa)
+                )
 
             tarefa.save()
 

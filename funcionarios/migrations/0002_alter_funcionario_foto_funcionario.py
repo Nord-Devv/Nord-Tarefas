@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('funcionarios', '0001_initial'),
+        ("funcionarios", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='funcionario',
-            name='foto_funcionario',
-            field=models.ImageField(storage=storages.backends.s3.S3Storage(), upload_to='funcionariosnord'),
+            model_name="funcionario",
+            name="foto_funcionario",
+            field=models.ImageField(
+                storage=storages.backends.s3.S3Storage(), upload_to="funcionariosnord"
+            ),
         ),
     ]

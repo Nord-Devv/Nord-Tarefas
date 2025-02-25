@@ -31,8 +31,10 @@ class FuncionarioAPI:
             if not funcionario:
                 return JsonResponse({"error": "Usuário não encontrado"}, status=400)
 
-            if not check_password(data.senha_funcionario, funcionario.senha_funcionario): # Encrypted check
-               return JsonResponse({"error": "Senha incorreta"}, status=400)
+            if not check_password(
+                data.senha_funcionario, funcionario.senha_funcionario
+            ):  # Encrypted check
+                return JsonResponse({"error": "Senha incorreta"}, status=400)
 
             now_utc = datetime.now(pytz.utc)
             user_tz = pytz.timezone(user_timezone)

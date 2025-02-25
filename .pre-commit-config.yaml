@@ -1,6 +1,8 @@
 default_language_version:
   python: "3.10"
 
+exclude: '^(Libs/|venv/|.venv/|env/|Lib/)'
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.3.0

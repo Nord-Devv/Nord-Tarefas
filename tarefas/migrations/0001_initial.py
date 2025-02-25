@@ -9,20 +9,55 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('funcionarios', '0001_initial'),
+        ("funcionarios", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Tarefa',
+            name="Tarefa",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome_tarefa', models.CharField(max_length=255)),
-                ('status_tarefa', models.CharField(choices=[('A fazer', 'A fazer'), ('Em andamento', 'Em andamento'), ('Pendente', 'Pendente'), ('Finalizado', 'Finalizado')], default='Pendente', max_length=255)),
-                ('descricao_tarefa', models.TextField(blank=True)),
-                ('prazo_inicial_tarefa', models.DateTimeField(auto_now_add=True, null=True)),
-                ('prazo_final_tarefa', models.DateTimeField(auto_now_add=True, null=True)),
-                ('atribuicao_tarefa', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='funcionarios.funcionario')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome_tarefa", models.CharField(max_length=255)),
+                (
+                    "status_tarefa",
+                    models.CharField(
+                        choices=[
+                            ("A fazer", "A fazer"),
+                            ("Em andamento", "Em andamento"),
+                            ("Pendente", "Pendente"),
+                            ("Finalizado", "Finalizado"),
+                        ],
+                        default="Pendente",
+                        max_length=255,
+                    ),
+                ),
+                ("descricao_tarefa", models.TextField(blank=True)),
+                (
+                    "prazo_inicial_tarefa",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                (
+                    "prazo_final_tarefa",
+                    models.DateTimeField(auto_now_add=True, null=True),
+                ),
+                (
+                    "atribuicao_tarefa",
+                    models.ForeignKey(
+                        blank=True,
+                        default=None,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="funcionarios.funcionario",
+                    ),
+                ),
             ],
         ),
     ]

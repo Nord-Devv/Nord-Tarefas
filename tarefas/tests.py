@@ -1,20 +1,24 @@
-from django.test import TestCase
-from funcionarios.models import Funcionario
-from django.utils.timezone import make_aware
-from tarefas.models import Tarefa
 from datetime import datetime
+
+from django.test import TestCase
+from django.utils.timezone import make_aware
+
+from funcionarios.models import Funcionario
+from tarefas.models import Tarefa
 
 
 class TarefaAPITestCase(TestCase):
     def setUp(self):
-        self.funcionario = Funcionario.objects.create(nome_funcionario="Teste Funcionario")
+        self.funcionario = Funcionario.objects.create(
+            nome_funcionario="Teste Funcionario"
+        )
         self.tarefa = Tarefa.objects.create(
             nome_tarefa="Tarefa Teste",
             status_tarefa="Pendente",
             atribuicao_tarefa=self.funcionario,
             descricao_tarefa="Teste",
             prazo_inicial_tarefa=make_aware(datetime(2024, 2, 1, 8, 0, 0)),
-            prazo_final_tarefa=make_aware(datetime(2024, 2, 2, 18, 0, 0))
+            prazo_final_tarefa=make_aware(datetime(2024, 2, 2, 18, 0, 0)),
         )
 
         self.tarefa = Tarefa.objects.create(
@@ -25,7 +29,7 @@ class TarefaAPITestCase(TestCase):
             prazo_inicial_tarefa=datetime(2024, 1, 1, 10, 0, 0),
             prazo_final_tarefa=datetime(2024, 1, 2, 18, 0, 0),
         )
-        
+
         self.listar_url = "/tarefa/tarefa/listar_tarefas"
         self.adicionar_url = "/tarefa/tarefa/adicionar_tarefas"
         self.remover_url = "/tarefa/tarefa/remover_tarefa"
@@ -46,7 +50,7 @@ class TarefaAPITestCase(TestCase):
             "prazo_inicial_tarefa": "2024-02-01T08:00:00Z",
             "prazo_final_tarefa": "2024-02-02T18:00:00Z",
         }
-        response = self.client.post(self.adicionar_url, data=payload, format='json')
+        response = self.client.post(self.adicionar_url, data=payload, format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["nome_tarefa"], "Nova Tarefa")
 
@@ -64,6 +68,6 @@ class TarefaAPITestCase(TestCase):
             "prazo_inicial_tarefa": "2024-03-01T08:00:00Z",
             "prazo_final_tarefa": "2024-03-02T18:00:00Z",
         }
-        response = self.client.put(self.alterar_url, data=payload, format='json')
+        response = self.client.put(self.alterar_url, data=payload, format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["nome_tarefa"], "Tarefa Modificada")
