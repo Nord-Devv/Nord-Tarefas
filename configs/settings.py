@@ -183,7 +183,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:4200",
     "http://127.0.0.1:4200",
-
+    "nord-tarefas.onrender.com",
 ]
 
 CORS_ALLOW_METHODS = [
