@@ -32,6 +32,7 @@ DEBUG = False  # TODO: DESABILITAR quando for para produção
 
 ALLOWED_HOSTS = [
     "nord-tarefas.onrender.com",
+    "https://nord-tarefas-front.vercel.app/"
     "localhost",
     "127.0.0.1",
 ]
@@ -187,7 +188,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
     "http://127.0.0.1:4200",
     "http://localhost:5173",
-    "https://nord-tarefas-front.vercel.app/"
+    "https://nord-tarefas-front.vercel.app"
 ]
 
 CORS_ALLOW_METHODS = [
