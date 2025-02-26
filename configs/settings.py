@@ -31,7 +31,7 @@ SECRET_KEY = "django-insecure-st-sjkr9c7q3a(7(2ex^23s^aa8(cpu+d2e7+xbgsdnr6a(hb3
 DEBUG = False  # TODO: DESABILITAR quando for para produção
 
 ALLOWED_HOSTS = [
-    "nord-tarefas.onrender.com",
+    "https://nord-tarefas.onrender.com",
     "https://nord-tarefas-front.vercel.app/"
     "localhost",
     "127.0.0.1",
@@ -221,4 +221,9 @@ CORS_ALLOW_HEADERS = [
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://nord-tarefas.onrender.com",  # Your Render domain
+    "https://nord-tarefas-front.vercel.app",  # Your frontend domain (if applicable)
 ]
