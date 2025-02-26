@@ -28,15 +28,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-st-sjkr9c7q3a(7(2ex^23s^aa8(cpu+d2e7+xbgsdnr6a(hb3"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # TODO: DESABILITAR
+DEBUG = False  # TODO: DESABILITAR quando for para produção
 
 ALLOWED_HOSTS = [
     "nord-tarefas.onrender.com",
     "localhost",
     "127.0.0.1",
-    "*",
-]  # TODO: TIRAR O *
-
+]
 
 # Application definition
 
@@ -189,6 +187,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
     "http://127.0.0.1:4200",
     "http://localhost:5173",
+    "https://nord-tarefas-front.vercel.app/"
 ]
 
 CORS_ALLOW_METHODS = [
