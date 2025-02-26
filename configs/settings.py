@@ -30,7 +30,12 @@ SECRET_KEY = "django-insecure-st-sjkr9c7q3a(7(2ex^23s^aa8(cpu+d2e7+xbgsdnr6a(hb3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # TODO: DESABILITAR
 
-ALLOWED_HOSTS = ["nord-tarefas.onrender.com"]
+ALLOWED_HOSTS = [
+    "nord-tarefas.onrender.com",
+    "localhost",
+    "127.0.0.1",
+    "*",
+]  # TODO: TIRAR O *
 
 
 # Application definition
@@ -43,7 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Cors
-    # "corsheaders",
+    "corsheaders",
     # S3 bucket
     "storages",
     # Modulos
@@ -183,12 +188,25 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:4200",
     "http://127.0.0.1:4200",
+    "http://localhost:5173",
 ]
 
 CORS_ALLOW_METHODS = [
     "GET",
     "POST",
-    "OPTIONS",
     "PUT",
     "DELETE",
+    "OPTIONS",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
 ]

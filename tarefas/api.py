@@ -4,20 +4,59 @@ from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import make_aware
 from ninja import NinjaAPI
+from ninja.security import django_auth
 
+from funcionarios.auth import JWTAuth
 from funcionarios.models import Funcionario
 
 from .models import Tarefa
-from .schemas import TarefaSchema
+from .schemas import ErrorSchema, TarefaSchema
 
-api_tarefa = NinjaAPI(urls_namespace="tarefa")
+api_tarefa = NinjaAPI(urls_namespace="tarefa", auth=JWTAuth())
 
 
 class TarefaAPI:
     @staticmethod
-    @api_tarefa.post(
-        "/tarefa/adicionar_tarefas", response={200: TarefaSchema, 400: dict}
+    @api_tarefa.get(
+        "/listar_tarefas",
+        response={200: list[TarefaSchema], 404: ErrorSchema},
     )
+    def listar_tarefas(request):
+        try:
+            # Fetch all tasks from the database
+            tarefas = Tarefa.objects.all()
+
+            # Serialize the tasks
+            tarefas_data = [
+                {
+                    "id": tarefa.id,  # Ensure ID is included
+                    "nome_tarefa": tarefa.nome_tarefa,
+                    "status_tarefa": tarefa.status_tarefa,
+                    "descricao_tarefa": tarefa.descricao_tarefa,
+                    "atribuicao_tarefa": tarefa.atribuicao_tarefa.id
+                    if tarefa.atribuicao_tarefa
+                    else None,
+                    "prazo_inicial_tarefa": tarefa.prazo_inicial_tarefa.strftime(
+                        "%Y-%m-%dT%H:%M:%SZ"
+                    )
+                    if tarefa.prazo_inicial_tarefa
+                    else None,
+                    "prazo_final_tarefa": tarefa.prazo_final_tarefa.strftime(
+                        "%Y-%m-%dT%H:%M:%SZ"
+                    )
+                    if tarefa.prazo_final_tarefa
+                    else None,
+                }
+                for tarefa in tarefas
+            ]
+
+            print("Sending tasks data:", tarefas_data)  # Debugging
+            return 200, tarefas_data
+        except Exception as e:
+            return 404, {"error": str(e)}
+
+    @staticmethod
+    @api_tarefa.post("/adicionar_tarefas", response={200: TarefaSchema, 400: dict})
     def adicionar_tarefa(request, tarefa: TarefaSchema):
         try:
             print("Received tarefa data:", tarefa.model_dump())  # Log the incoming data
@@ -65,9 +104,7 @@ class TarefaAPI:
             return 400, {"error": str(e)}
 
     @staticmethod
-    @api_tarefa.post(
-        "/tarefa/adicionar_tarefas", response={200: TarefaSchema, 400: dict}
-    )
+    @api_tarefa.post("/adicionar_tarefas", response={200: TarefaSchema, 400: dict})
     def adicionar_tarefa(request, tarefa: TarefaSchema):
         try:
             print("Received tarefa data:", tarefa.model_dump())  # Log the incoming data
@@ -105,7 +142,7 @@ class TarefaAPI:
 
     @staticmethod
     @api_tarefa.delete(
-        "/tarefa/remover_tarefa/{nome_tarefa}",
+        "/remover_tarefa/{nome_tarefa}",
         response={200: TarefaSchema, 404: dict, 400: dict},
     )
     def remover_tarefa(request, nome_tarefa: str):
@@ -123,7 +160,7 @@ class TarefaAPI:
 
     @staticmethod
     @api_tarefa.put(
-        "/tarefa/alterar_tarefa/{id_tarefa}", response={200: TarefaSchema, 400: dict}
+        "/alterar_tarefa/{id_tarefa}", response={200: TarefaSchema, 400: dict}
     )
     def alterar_tarefa(request, id_tarefa: str, dados_tarefa: TarefaSchema):
         try:
