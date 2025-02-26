@@ -1,10 +1,10 @@
 from datetime import datetime
 
 from django.forms.models import model_to_dict
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import make_aware
 from ninja import NinjaAPI
-from ninja.security import django_auth
 
 from funcionarios.auth import JWTAuth
 from funcionarios.models import Funcionario
@@ -20,40 +20,32 @@ class TarefaAPI:
     @api_tarefa.get(
         "/listar_tarefas",
         response={200: list[TarefaSchema], 404: ErrorSchema},
+        auth=JWTAuth(),
     )
     def listar_tarefas(request):
+        # Extract the email from the JWT payload (provided by JWTAuth)
+        user_email = request.auth.get("email_funcionario")
         try:
-            # Fetch all tasks from the database
-            tarefas = Tarefa.objects.all()
+            funcionario = Funcionario.objects.get(email_funcionario=user_email)
+        except Funcionario.DoesNotExist:
+            return JsonResponse({"error": "Usuário não encontrado"}, status=404)
 
-            # Serialize the tasks
-            tarefas_data = [
-                {
-                    "id": tarefa.id,  # Ensure ID is included
-                    "nome_tarefa": tarefa.nome_tarefa,
-                    "status_tarefa": tarefa.status_tarefa,
-                    "descricao_tarefa": tarefa.descricao_tarefa,
-                    "atribuicao_tarefa": tarefa.atribuicao_tarefa.id
-                    if tarefa.atribuicao_tarefa
-                    else None,
-                    "prazo_inicial_tarefa": tarefa.prazo_inicial_tarefa.strftime(
-                        "%Y-%m-%dT%H:%M:%SZ"
-                    )
-                    if tarefa.prazo_inicial_tarefa
-                    else None,
-                    "prazo_final_tarefa": tarefa.prazo_final_tarefa.strftime(
-                        "%Y-%m-%dT%H:%M:%SZ"
-                    )
-                    if tarefa.prazo_final_tarefa
-                    else None,
-                }
-                for tarefa in tarefas
-            ]
+        # Filter tasks that belong to this user
+        tasks = Tarefa.objects.filter(atribuicao_tarefa=funcionario)
 
-            print("Sending tasks data:", tarefas_data)  # Debugging
-            return 200, tarefas_data
-        except Exception as e:
-            return 404, {"error": str(e)}
+        # Serialize your tasks appropriately (assuming you have a serializer)
+        serialized_tasks = [
+            {
+                "id": task.id,
+                "nome_tarefa": task.nome_tarefa,
+                "descricao_tarefa": task.descricao_tarefa,
+                "status_tarefa": task.status_tarefa,
+                "prazo_inicial_tarefa": task.prazo_inicial_tarefa,
+                "prazo_final_tarefa": task.prazo_final_tarefa,
+            }
+            for task in tasks
+        ]
+        return JsonResponse(serialized_tasks, safe=False)
 
     @staticmethod
     @api_tarefa.post("/adicionar_tarefas", response={200: TarefaSchema, 400: dict})

@@ -19,7 +19,7 @@ api_funcionario = NinjaAPI(urls_namespace="funcionarios", auth=JWTAuth())
 
 class FuncionarioAPI:
     @staticmethod
-    @api_funcionario.post("/login_funcionario")
+    @api_funcionario.post("/login_funcionario", auth=None)
     def login_funcionario(request, data: LoginFuncionarioSchema):
         try:
             user_timezone = request.headers.get("Timezone", "UTC")
@@ -52,9 +52,11 @@ class FuncionarioAPI:
                 algorithm="HS256",
             )
 
+            print("Generated token:", token)  # Debugging
             return JsonResponse({"message": "Login bem-sucedido", "token": token})
 
         except Exception as e:
+            print("Login error:", str(e))  # Debugging
             return JsonResponse({"error": str(e)}, status=500)
 
     @staticmethod
