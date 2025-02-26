@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-st-sjkr9c7q3a(7(2ex^23s^aa8(cpu+d2e7+xbgsdnr6a(hb3"
+SECRET_KEY = "django-insecure-st-sjkr9c7q3a(7(2ex^23s^aa8(cpu+d2e7+xbgsdnr6a(hb3" # TODO:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False  # TODO: DESABILITAR quando for para produção
@@ -137,13 +137,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 
+# Directory where Django will collect static files
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Additional locations of static files
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static'),  # Source static files directory
 ]
+
+# Whitenoise configuration for serving static files in production
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # # Default primary key field type
 # # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
