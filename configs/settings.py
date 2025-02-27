@@ -32,7 +32,7 @@ DEBUG = True  # TODO: DESABILITAR quando for para produção
 
 ALLOWED_HOSTS = [
     "nord-tarefas.onrender.com",
-    "nord-tarefas-front.vercel.app"
+    "nord-tarefas-front.vercel.app",
     "localhost",
     "127.0.0.1",
 ]

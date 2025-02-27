@@ -135,16 +135,14 @@ class TarefaAPI:
     @staticmethod
     @api_tarefa.delete(
         "/remover_tarefa/{nome_tarefa}",
-        response={200: TarefaSchema, 404: dict, 400: dict},
+        response={200: dict, 404: dict, 400: dict},
     )
     def remover_tarefa(request, nome_tarefa: str):
         try:
-            print(f"Deleting task with name: {nome_tarefa}")  # Log the task name
+            print(f"Deleting task with name: {nome_tarefa}")
             tarefa = Tarefa.objects.get(nome_tarefa=nome_tarefa)
-            print(f"Found task: {tarefa}")  # Log the found task
-            tarefa_dict = model_to_dict(tarefa)
             tarefa.delete()
-            return 200, TarefaSchema.model_validate(tarefa_dict)
+            return 200, {"message": "Task deleted successfully"}
         except Tarefa.DoesNotExist:
             return 404, {"error": f"Tarefa with name '{nome_tarefa}' does not exist."}
         except Exception as e:

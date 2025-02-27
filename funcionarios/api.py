@@ -39,7 +39,7 @@ class FuncionarioAPI:
             now_utc = datetime.now(pytz.utc)
             user_tz = pytz.timezone(user_timezone)
             now_user_tz = now_utc.astimezone(user_tz)
-            expiration_time = now_user_tz + timedelta(days=1)
+            expiration_time = now_user_tz + timedelta(hours=1)
             expiration_time_utc = expiration_time.astimezone(pytz.utc)
 
             # Generate JWT token
@@ -60,13 +60,10 @@ class FuncionarioAPI:
             return JsonResponse({"error": str(e)}, status=500)
 
     @staticmethod
-    @api_funcionario.post("/logout_funcionario", auth=JWTAuth())
+    @api_funcionario.post("/logout_funcionario", auth=None)  # Allow access without token
     def logout_funcionario(request):
         try:
-            # Get the token from the request headers
-            token = request.headers.get("Authorization").split(" ")[1]
-            # Optionally, you can add the token to a blacklist (e.g., Redis or database)
-            # For now, we'll just return a success message
+            # Optionally, blacklist the token here
             return {"message": "Logout realizado com sucesso"}
         except Exception as e:
-            raise HttpError(401, "Usuário não autênticado")
+            return JsonResponse({"error": str(e)}, status=400)
