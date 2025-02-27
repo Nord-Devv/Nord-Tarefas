@@ -28,7 +28,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "django-insecure-st-sjkr9c7q3a(7(2ex^23s^aa8(cpu+d2e7+xbgsdnr6a(hb3" # TODO:
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # TODO: DESABILITAR quando for para produção
+DEBUG = True  # TODO: DESABILITAR quando for para produção
 
 ALLOWED_HOSTS = [
     "nord-tarefas.onrender.com",
