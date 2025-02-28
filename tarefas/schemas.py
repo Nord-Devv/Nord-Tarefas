@@ -1,6 +1,5 @@
+from ninja import schema
 from pydantic import BaseModel
-
-from funcionarios.schemas import FuncionarioSchema
 
 
 class ErrorSchema(BaseModel):
@@ -17,3 +16,7 @@ class TarefaSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class StatusUpdateSchema(schema.Schema):
+    novo_status: str
