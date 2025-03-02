@@ -1,14 +1,14 @@
+from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.forms.models import model_to_dict
 from ninja import NinjaAPI
 
 from funcionarios.auth import JWTAuth
 from funcionarios.models import Funcionario
 
-from .models import Tarefa
-from .schemas import ErrorSchema, TarefaSchema, StatusUpdateSchema
 from .choices import TarefaChoices
+from .models import Tarefa
+from .schemas import ErrorSchema, StatusUpdateSchema, TarefaSchema
 
 api_tarefa = NinjaAPI(urls_namespace="tarefa", auth=JWTAuth())
 
@@ -21,17 +21,14 @@ class TarefaAPI:
         auth=JWTAuth(),
     )
     def listar_tarefas(request):
-        # Extract the email from the JWT payload (provided by JWTAuth)
         user_email = request.auth.get("email_funcionario")
         try:
             funcionario = Funcionario.objects.get(email_funcionario=user_email)
         except Funcionario.DoesNotExist:
             return JsonResponse({"error": "Usuário não encontrado"}, status=404)
 
-        # Filter tasks that belong to this user
         tasks = Tarefa.objects.filter(atribuicao_tarefa=funcionario)
 
-        # Serialize your tasks appropriately (assuming you have a serializer)
         serialized_tasks = [
             {
                 "id": task.id,
@@ -40,11 +37,13 @@ class TarefaAPI:
                 "status_tarefa": task.status_tarefa,
                 "prazo_inicial_tarefa": task.prazo_inicial_tarefa,
                 "prazo_final_tarefa": task.prazo_final_tarefa,
+                "foto_funcionario": task.atribuicao_tarefa.foto_funcionario.url
+                if task.atribuicao_tarefa.foto_funcionario
+                else None,
             }
             for task in tasks
         ]
         return JsonResponse(serialized_tasks, safe=False)
-
 
     @staticmethod
     @api_tarefa.delete(
@@ -64,30 +63,35 @@ class TarefaAPI:
 
     @staticmethod
     @api_tarefa.put(
-        "/alterar_status_tarefa/{id_tarefa}",
-        response={200: TarefaSchema, 400: dict}
+        "/alterar_status_tarefa/{id_tarefa}", response={200: TarefaSchema, 400: dict}
     )
     def alterar_status_tarefa(request, id_tarefa: int, payload: StatusUpdateSchema):
         try:
             tarefa = get_object_or_404(Tarefa, id=id_tarefa)
-            
+
             status_validos = [choice[0] for choice in TarefaChoices.CHOICES]
             if payload.novo_status not in status_validos:
-                return 400, {"error": f"Status Inválido. Os status válidos são: {status_validos}"}
-            
+                return 400, {
+                    "error": f"Status Inválido. Os status válidos são: {status_validos}"
+                }
+
             tarefa.status_tarefa = payload.novo_status
             tarefa.save()
-            
+
             tarefa_dict = model_to_dict(tarefa)
             if tarefa_dict.get("prazo_inicial_tarefa"):
-                tarefa_dict["prazo_inicial_tarefa"] = tarefa_dict["prazo_inicial_tarefa"].isoformat()
+                tarefa_dict["prazo_inicial_tarefa"] = tarefa_dict[
+                    "prazo_inicial_tarefa"
+                ].isoformat()
             if tarefa_dict.get("prazo_final_tarefa"):
-                tarefa_dict["prazo_final_tarefa"] = tarefa_dict["prazo_final_tarefa"].isoformat()
-            
+                tarefa_dict["prazo_final_tarefa"] = tarefa_dict[
+                    "prazo_final_tarefa"
+                ].isoformat()
+
             # Validate the data using TarefaSchema
             validacao_data = TarefaSchema.model_validate(tarefa_dict)
-            
+
             return 200, validacao_data
-            
+
         except Exception as e:
             return 400, {"error": str(e)}

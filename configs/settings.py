@@ -17,14 +17,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-st-sjkr9c7q3a(7(2ex^23s^aa8(cpu+d2e7+xbgsdnr6a(hb3" # TODO: REMOVER
+SECRET_KEY = "django-insecure-st-sjkr9c7q3a(7(2ex^23s^aa8(cpu+d2e7+xbgsdnr6a(hb3"  # TODO: REMOVER
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # TODO: DESABILITAR quando for para produção
@@ -139,14 +139,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 # Directory where Django will collect static files
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Additional locations of static files
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Source static files directory
+    os.path.join(BASE_DIR, "static"),  # Source static files directory
 ]
 
 # Whitenoise configuration for serving static files in production
@@ -199,7 +199,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
     "http://127.0.0.1:4200",
     "http://localhost:5173",
-    "https://nord-tarefas-front.vercel.app"
+    "https://nord-tarefas-front.vercel.app",
 ]
 
 CORS_ALLOW_METHODS = [

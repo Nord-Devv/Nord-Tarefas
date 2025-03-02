@@ -60,7 +60,9 @@ class FuncionarioAPI:
             return JsonResponse({"error": str(e)}, status=500)
 
     @staticmethod
-    @api_funcionario.post("/logout_funcionario", auth=None)  # Allow access without token
+    @api_funcionario.post(
+        "/logout_funcionario", auth=None
+    )  # Allow access without token
     def logout_funcionario(request):
         try:
             # Optionally, blacklist the token here

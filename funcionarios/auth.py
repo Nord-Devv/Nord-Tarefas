@@ -12,7 +12,9 @@ class JWTAuth(HttpBearer):
         try:
             payload = decode(token, SECRET_KEY, algorithms=["HS256"])
             exp = payload.get("exp")
-            if exp and datetime.now(pytz.utc) > datetime.fromtimestamp(exp, tz=pytz.utc):
+            if exp and datetime.now(pytz.utc) > datetime.fromtimestamp(
+                exp, tz=pytz.utc
+            ):
                 raise InvalidTokenError("Token has expired")
             return payload
         except ExpiredSignatureError:
