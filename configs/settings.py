@@ -226,3 +226,5 @@ CSRF_TRUSTED_ORIGINS = [
     "https://nord-tarefas.onrender.com",  # Your Render domain
     "https://nord-tarefas-front.vercel.app",  # Your frontend domain (if applicable)
 ]
+
+CORS_ALLOW_CREDENTIALS = True
