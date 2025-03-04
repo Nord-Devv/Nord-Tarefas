@@ -1,7 +1,7 @@
 from datetime import datetime
 
-import pytz
-from jwt import ExpiredSignatureError, InvalidTokenError, decode
+import jwt
+from django.conf import settings
 from ninja.security import HttpBearer
 
 SECRET_KEY = "your_secret_key"
@@ -10,14 +10,13 @@ SECRET_KEY = "your_secret_key"
 class JWTAuth(HttpBearer):
     def authenticate(self, request, token):
         try:
-            payload = decode(token, SECRET_KEY, algorithms=["HS256"])
+            payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             exp = payload.get("exp")
-            if exp and datetime.now(pytz.utc) > datetime.fromtimestamp(
-                exp, tz=pytz.utc
-            ):
-                raise InvalidTokenError("Token has expired")
-            return payload
-        except ExpiredSignatureError:
-            raise InvalidTokenError("Token has expired")
-        except InvalidTokenError:
-            raise InvalidTokenError("Invalid token")
+            if exp and datetime.utcfromtimestamp(exp) < datetime.utcnow():
+                return None  # Token expired
+
+            return payload  # Valid token
+        except jwt.ExpiredSignatureError:
+            return None  # Token expired
+        except jwt.InvalidTokenError:
+            return None  # Invalid token

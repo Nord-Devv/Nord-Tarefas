@@ -21,6 +21,9 @@ class TarefaAPI:
         auth=JWTAuth(),
     )
     def listar_tarefas(request):
+        if not request.auth:  # Ensure the token is valid
+            return JsonResponse({"error": "Token inválido ou expirado"}, status=401)
+
         user_email = request.auth.get("email_funcionario")
         try:
             funcionario = Funcionario.objects.get(email_funcionario=user_email)
