@@ -4,10 +4,9 @@ from django.shortcuts import get_object_or_404
 from ninja import NinjaAPI
 
 from funcionarios.auth import JWTAuth
-from funcionarios.models import Funcionario
 
 from .choices import TarefaChoices
-from .models import Tarefa
+from .models import DeletedTarefa, Funcionario, Tarefa
 from .schemas import ErrorSchema, StatusUpdateSchema, TarefaSchema
 
 api_tarefa = NinjaAPI(urls_namespace="tarefa", auth=JWTAuth())
@@ -57,8 +56,19 @@ class TarefaAPI:
         try:
             print(f"Deleting task with name: {nome_tarefa}")
             tarefa = Tarefa.objects.get(nome_tarefa=nome_tarefa)
-            tarefa.delete()
-            return 200, {"message": "Task deleted successfully"}
+
+            # Create a DeletedTarefa record
+            DeletedTarefa.objects.create(
+                nome_tarefa=tarefa.nome_tarefa,
+                descricao_tarefa=tarefa.descricao_tarefa,
+                status_tarefa=tarefa.status_tarefa,
+                prazo_inicial_tarefa=tarefa.prazo_inicial_tarefa,
+                prazo_final_tarefa=tarefa.prazo_final_tarefa,
+                atribuicao_tarefa=tarefa.atribuicao_tarefa,
+            )
+
+            tarefa.delete()  # This will permanently delete the task from Tarefa table
+            return 200, {"message": "Task moved to deleted tasks successfully"}
         except Tarefa.DoesNotExist:
             return 404, {"error": f"Tarefa with name '{nome_tarefa}' does not exist."}
         except Exception as e:
@@ -98,3 +108,7 @@ class TarefaAPI:
 
         except Exception as e:
             return 400, {"error": str(e)}
+
+
+class NotasAPI:
+    ...

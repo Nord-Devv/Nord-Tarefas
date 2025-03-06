@@ -19,3 +19,13 @@ class Tarefa(models.Model):
 
     def __str__(self):
         return self.nome_tarefa
+
+
+class DeletedTarefa(models.Model):
+    nome_tarefa = models.CharField(max_length=255)
+    descricao_tarefa = models.TextField()
+    status_tarefa = models.CharField(max_length=50, choices=TarefaChoices.CHOICES)
+    prazo_inicial_tarefa = models.DateTimeField()
+    prazo_final_tarefa = models.DateTimeField()
+    atribuicao_tarefa = models.ForeignKey(Funcionario, on_delete=models.CASCADE)
+    deleted_at = models.DateTimeField(auto_now_add=True)
