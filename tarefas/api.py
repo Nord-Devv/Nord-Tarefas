@@ -9,7 +9,7 @@ from .choices import TarefaChoices
 from .models import DeletedTarefa, Funcionario, Tarefa
 from .schemas import ErrorSchema, StatusUpdateSchema, TarefaSchema
 
-api_tarefa = NinjaAPI(urls_namespace="tarefa", auth=JWTAuth())
+api_tarefa = NinjaAPI(urls_namespace="tarefas", auth=JWTAuth())
 
 
 class TarefaAPI:

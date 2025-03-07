@@ -2,11 +2,11 @@ from datetime import datetime, timedelta
 
 import jwt
 import pytz
-from django.contrib.auth import logout
 from django.contrib.auth.hashers import check_password
+from django.core.cache import cache
 from django.http import JsonResponse
+from jwt import InvalidTokenError
 from ninja import NinjaAPI
-from ninja.errors import HttpError
 
 from .auth import JWTAuth
 from .models import Funcionario
@@ -61,11 +61,20 @@ class FuncionarioAPI:
 
     @staticmethod
     @api_funcionario.post(
-        "/logout_funcionario", auth=None
-    )  # Allow access without token
+        "/logout_funcionario", auth=JWTAuth()
+    )  # Require authentication
     def logout_funcionario(request):
         try:
-            # Optionally, blacklist the token here
+            # Get the token from the request headers
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1]
+
+                # Store the token in the cache to invalidate it
+                cache.set(token, "invalid", timeout=None)  # Store indefinitely
+
             return {"message": "Logout realizado com sucesso"}
+        except InvalidTokenError as e:
+            return JsonResponse({"detail": "Usuário não autênticado"}, status=401)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)

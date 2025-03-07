@@ -69,6 +69,12 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
 ]
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    }
+}
+
 ROOT_URLCONF = "configs.urls"
 
 TEMPLATES = [

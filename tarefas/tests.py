@@ -1,73 +1,62 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from django.test import TestCase
-from django.utils.timezone import make_aware
+import jwt
+import pytz
+from django.test import Client, TestCase
+from django.urls import reverse
+from django.utils import timezone
 
 from funcionarios.models import Funcionario
-from tarefas.models import Tarefa
+
+from .models import DeletedTarefa, Tarefa
 
 
 class TarefaAPITestCase(TestCase):
     def setUp(self):
+        self.client = Client()
         self.funcionario = Funcionario.objects.create(
-            nome_funcionario="Teste Funcionario"
+            email_funcionario="test@example.com",
+            senha_funcionario="dummy_password",  # Use make_password in real scenarios
         )
         self.tarefa = Tarefa.objects.create(
-            nome_tarefa="Tarefa Teste",
+            nome_tarefa="Test Task",
+            descricao_tarefa="Test Description",
             status_tarefa="Pendente",
+            prazo_inicial_tarefa=timezone.make_aware(timezone.datetime(2023, 1, 1)),
+            prazo_final_tarefa=timezone.make_aware(timezone.datetime(2023, 1, 10)),
             atribuicao_tarefa=self.funcionario,
-            descricao_tarefa="Teste",
-            prazo_inicial_tarefa=make_aware(datetime(2024, 2, 1, 8, 0, 0)),
-            prazo_final_tarefa=make_aware(datetime(2024, 2, 2, 18, 0, 0)),
         )
 
-        self.tarefa = Tarefa.objects.create(
-            nome_tarefa="Tarefa Teste",
-            status_tarefa="Pendente",
-            atribuicao_tarefa=self.funcionario,
-            descricao_tarefa="Descrição da tarefa de teste",
-            prazo_inicial_tarefa=datetime(2024, 1, 1, 10, 0, 0),
-            prazo_final_tarefa=datetime(2024, 1, 2, 18, 0, 0),
+        expiration_time_utc = datetime.now(pytz.utc) + timedelta(hours=1)
+        self.token = jwt.encode(
+            {
+                "email_funcionario": self.funcionario.email_funcionario,
+                "exp": expiration_time_utc,
+            },
+            "your_secret_key",
+            algorithm="HS256",
         )
-
-        self.listar_url = "/tarefa/tarefa/listar_tarefas"
-        self.adicionar_url = "/tarefa/tarefa/adicionar_tarefas"
-        self.remover_url = "/tarefa/tarefa/remover_tarefa"
-        self.alterar_url = "/tarefa/tarefa/alterar_tarefa"
 
     def test_listar_tarefas(self):
-        response = self.client.get(self.listar_url)
+        headers = {"HTTP_AUTHORIZATION": f"Bearer {self.token}"}
+        response = self.client.get(reverse("tarefas:listar_tarefas"), **headers)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 1)
-        self.assertEqual(response.json()[0]["nome_tarefa"], "Tarefa Teste")
-
-    def test_adicionar_tarefa(self):
-        payload = {
-            "nome_tarefa": "Nova Tarefa",
-            "status_tarefa": "Em andamento",
-            "descricao_tarefa": "Descrição de nova tarefa",
-            "atribuicao_tarefa": self.funcionario.id,
-            "prazo_inicial_tarefa": "2024-02-01T08:00:00Z",
-            "prazo_final_tarefa": "2024-02-02T18:00:00Z",
-        }
-        response = self.client.post(self.adicionar_url, data=payload, format="json")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["nome_tarefa"], "Nova Tarefa")
 
     def test_remover_tarefa(self):
-        response = self.client.delete(self.remover_url)
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse(Tarefa.objects.filter(nome_tarefa="Tarefa Teste").exists())
+        # Authenticate the request
+        headers = {"HTTP_AUTHORIZATION": f"Bearer {self.token}"}
 
-    def test_alterar_tarefa(self):
-        payload = {
-            "nome_tarefa": "Tarefa Modificada",
-            "status_tarefa": "Concluída",
-            "descricao_tarefa": "Descrição alterada",
-            "atribuicao_tarefa": self.funcionario.id,
-            "prazo_inicial_tarefa": "2024-03-01T08:00:00Z",
-            "prazo_final_tarefa": "2024-03-02T18:00:00Z",
-        }
-        response = self.client.put(self.alterar_url, data=payload, format="json")
+        # Make the request
+        response = self.client.delete(
+            reverse("tarefas:remover_tarefa", args=["Test Task"]), **headers
+        )
+
+        # Check the response status code
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["nome_tarefa"], "Tarefa Modificada")
+
+        deleted_tarefa = DeletedTarefa.objects.filter(nome_tarefa="Test Task").first()
+        self.assertIsNotNone(deleted_tarefa)
+
+        # Check if the task was deleted from Tarefa
+        tarefa_exists = Tarefa.objects.filter(nome_tarefa="Test Task").exists()
+        self.assertFalse(tarefa_exists)

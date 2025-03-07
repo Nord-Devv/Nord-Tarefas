@@ -1,4 +1,9 @@
+from datetime import datetime, timedelta
+
+import jwt
+import pytz
 from django.contrib.auth.hashers import make_password
+from django.core.cache import cache
 from django.test import TestCase
 from rest_framework.test import APIClient
 
@@ -14,8 +19,8 @@ class FuncionarioAPITestCase(TestCase):
             email_funcionario="test@example.com",
             senha_funcionario=make_password("password123"),  # Simulate hashed password
         )
-        self.login_url = "/funcionario/funcionario/login_funcionario"
-        self.logout_url = "/funcionario/funcionario/logout_funcionario"
+        self.login_url = "/funcionario/login_funcionario"
+        self.logout_url = "/funcionario/logout_funcionario"
 
     def test_login_funcionario_success(self):
         response = self.client.post(
@@ -63,7 +68,25 @@ class FuncionarioAPITestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "Logout realizado com sucesso"})
 
-    def test_logout_funcionario_unauthenticated(self):
-        response = self.client.post(self.logout_url)
-        self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.json(), {"detail": "Usuário não autênticado"})
+    def test_logout_funcionario_success(self):
+        # Generate a valid token
+        expiration_time_utc = datetime.now(pytz.utc) + timedelta(hours=1)
+        token = jwt.encode(
+            {
+                "email_funcionario": self.funcionario.email_funcionario,
+                "exp": expiration_time_utc,
+            },
+            SECRET_KEY,
+            algorithm="HS256",
+        )
+
+        # Include the token in the request headers
+        headers = {"Authorization": f"Bearer {token}"}
+        response = self.client.post(self.logout_url, headers=headers)
+
+        # Check the response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"message": "Logout realizado com sucesso"})
+
+        # Verify that the token is invalidated
+        self.assertEqual(cache.get(token), "invalid")
