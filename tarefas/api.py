@@ -39,8 +39,8 @@ class TarefaAPI:
                 "status_tarefa": task.status_tarefa,
                 "prazo_inicial_tarefa": task.prazo_inicial_tarefa,
                 "prazo_final_tarefa": task.prazo_final_tarefa,
-                "foto_funcionario": task.atribuicao_tarefa.foto_funcionario.url
-                if task.atribuicao_tarefa.foto_funcionario
+                "foto_funcionario": task.atribuicao_tarefa.foto_funcionario.url 
+                if task.atribuicao_tarefa.foto_funcionario and task.atribuicao_tarefa.foto_funcionario.name 
                 else None,
             }
             for task in tasks
